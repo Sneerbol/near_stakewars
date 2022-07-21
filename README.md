@@ -229,8 +229,28 @@ WantedBy=multi-user.target<br>
   <strong><code>sudo apt install ccze </strong></code><br>
   <strong><code>journalctl -n 100 -f -u neard | ccze -A </strong></code><br>
   
-
-      
+  <h2>Создаем стейкинг пул, заливаем туда токенов и попадаем в актив сет</h2>
+  Ждем пока нода синхронизируется на 100%, а пока ждем можем чутка хрононизироваться и попить пивка :)
+  Чтобы понять это идем просто на https://explorer.shardnet.near.org/blocks и смотрим по логам на каком вы блоке )
+  <h3>СОздаем пул</h3>
+  
+<strong><code>near call factory.shardnet.near create_staking_pool '{"staking_pool_id": "<pool id>", "owner_id": "<accountId>", "stake_public_key": "<public key>", "reward_fee_fraction": {"numerator": 5, "denominator": 100}, "code_hash":"DD428g9eqLL8fWUxv8QSpVFzyHi1Qd16P8ephYCTmMSZ"}' --accountId="<accountId>" --amount=30 --gas=300000000000000</strong></code><br>
+    Нужно поменять<br>
+    Pool ID, Owner ID, Public Key, Account Id<br>
+    
+    Паблик кей можно найти в validator_key.json<br>
+    
+    Теперь депозитим все ниры с кошелька на наш пул с помощью команды:<br>
+    <strong><code>near call <staking_pool_id> deposit_and_stake --amount <amount> --accountId <accountId> --gas=300000000000000</strong></code><br>
+      значения как и раньше меняем на свои, оставляю пару ниров для комс<br>
+    
+    
+ <h3>Ping</h3>
+Делаем крона, потому-что мы обязаны пинговать свой пул каждую эпоху
+      <strong><code>nano near_ping.sh</strong</code>
+        Туда пишем:<br>
+        <strong><code>NEAR_ENV=shardnet near call XXX.factory.shardnet.near ping '{}' --accountId XXX.shardnet.near --gas=300000000000000</strong></code>
+        как обычно меняем данные на свои<br>
 
 
   
