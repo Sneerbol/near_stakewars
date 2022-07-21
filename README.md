@@ -232,34 +232,58 @@ WantedBy=multi-user.target<br>
   <h2>Создаем стейкинг пул, заливаем туда токенов и попадаем в актив сет</h2>
   Ждем пока нода синхронизируется на 100%, а пока ждем можем чутка хрононизироваться и попить пивка :)
   Чтобы понять это идем просто на https://explorer.shardnet.near.org/blocks и смотрим по логам на каком вы блоке )
-  <h3>СОздаем пул</h3>
+  <h3>Сoздаем пул</h3>
   
-<strong><code>near call factory.shardnet.near create_staking_pool '{"staking_pool_id": "<pool id>", "owner_id": "<accountId>", "stake_public_key": "<public key>", "reward_fee_fraction": {"numerator": 5, "denominator": 100}, "code_hash":"DD428g9eqLL8fWUxv8QSpVFzyHi1Qd16P8ephYCTmMSZ"}' --accountId="<accountId>" --amount=30 --gas=300000000000000</strong></code><br>
-    Нужно поменять<br>
-    Pool ID, Owner ID, Public Key, Account Id<br>
+<strong><code>near call factory.shardnet.near create_staking_pool '{"staking_pool_id": "<pool id>", "owner_id": "<accountId>", "stake_public_key": "<public key>", "reward_fee_fraction": {"numerator": 5, "denominator": 100}, "code_hash":"DD428g9eqLL8fWUxv8QSpVFzyHi1Qd16P8ephYCTmMSZ"}' --accountId="<accountId>" --amount=30 --gas=300000000000000
+ </strong></code><br>
+Нужно поменять<br>
+Pool ID, Owner ID, Public Key, Account Id<br>
     
-    Паблик кей можно найти в validator_key.json<br>
+Паблик кей можно найти в validator_key.json<br>
     
-    Теперь депозитим все ниры с кошелька на наш пул с помощью команды:<br>
-    <strong><code>near call <staking_pool_id> deposit_and_stake --amount <amount> --accountId <accountId> --gas=300000000000000</strong></code><br>
-      значения как и раньше меняем на свои, оставляю пару ниров для комс<br>
+Теперь депозитим все ниры с кошелька на наш пул с помощью команды:<br>
+<code>near call <staking_pool_id> deposit_and_stake --amount <amount> --accountId <accountId> --gas=300000000000000</code><br>значения как и раньше меняем на свои, оставляю пару ниров для комс<br>
     
     
- <h3>Ping</h3>
+<h3>Ping</h3>
 Делаем крона, потому-что мы обязаны пинговать свой пул каждую эпоху
       <strong><code>nano near_ping.sh</strong</code>
         Туда пишем:<br>
-        <strong><code>NEAR_ENV=shardnet near call XXX.factory.shardnet.near ping '{}' --accountId XXX.shardnet.near --gas=300000000000000</strong></code>
+        <strong><code>NEAR_ENV=shardnet near call XXX.factory.shardnet.near ping '{}' --accountId XXX.shardnet.near --gas=300000000000000 </strong></code>
         как обычно меняем данные на свои<br>
+        
+И <code>nano near_ping.log</code><br>
+там пишем #start<br>
+        
+<code>crontab -e</code><br>
+        
+Туда запихаем:<br>
+        
+<code>*/5  * * * * nohup ~/near_ping.sh >> ~/near_ping.log 2>&1 &</code><br>
 
+И пишем:<br>
+        
+<code>chmod +x near_ping.sh</code><br>
+Сразу после этого можете найти себя тут https://explorer.shardnet.near.org/nodes/validators <br>
+        Будет писать Proposal, потом Joining, а потом если все ок Active </br>
 
-  
+        
+![image](https://user-images.githubusercontent.com/23613367/180327173-79e57ff6-4361-41fb-bbac-fff104d2cff4.png)<br>
 
-  
-  
-
-
-  
+      
+<h2>Полезные команды проверки ноды</h2>
+        
+1.Логи - journalctl -n 100 -f -u neard | ccze -A (Лежат логи тут - ~/.nearup/logs)
+        
+2.РПЦ команды, ( можно найти много тут https://docs.near.org/docs/api/rpc )
+        
+3. Проверить версию ноды - <code> curl -s http://127.0.0.1:3030/status | jq .version </code>
+        
+4.Проверить делегации и стейк <code> near view <your pool>.factory.shardnet.near get_accounts '{"from_index": 0, "limit": 10}' --accountId <accountId>.shardnet.near </code>
+ 
+5.Одна из важных, когда вылетаем из активного сета, проверить причину:<br>
+        
+<code> curl -s -d '{"jsonrpc": "2.0", "method": "validators", "id": "dontcare", "params": [null]}' -H 'Content-Type: application/json' 127.0.0.1:3030 | jq -c '.result.prev_epoch_kickout[] | select(.account_id | contains ("<POOL_ID>"))' | jq .reason </code>
  
   
 
