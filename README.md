@@ -115,6 +115,41 @@
 
 <strong><code>cargo build -p neard --release --features shardnet</strong></code>
 
+Теперь нам нужны некоторые файлы конфигурации нашей ноды, если коротко то мы создаем папку дата (туда будут записываться блоки), конфиг файл (который отвечает за то, как будет работать нода, например искать пиры и комуницировать с ними), генезис файл (в нем инфа о старте блокчейна, такой себе типа снепшот блока с которого все стартует), и нод кей файл (там будут ключи ноды и ее айди).<br>
+
+Пишем:<br>
+
+<strong><code>./target/release/neard --home ~/.near init --chain-id shardnet --download-genesis</strong></code>
+
+<strong><code>rm ~/.near/config.json </strong></code>
+
+<strong><code>wget -O ~/.near/config.json https://s3-us-west-1.amazonaws.com/build.nearprotocol.com/nearcore-deploy/shardnet/config.json </strong></code>
+
+<h3>Запускаем ноду</h3>
+
+<strong><code>cd ~/nearcore </strong></code>
+  
+<strong><code>./target/release/neard --home ~/.near run </strong></code>
+
+![image](https://user-images.githubusercontent.com/23613367/180310102-2632130c-5bbe-4cc4-9ebc-826c145371e9.png)
+
+Должны забегать буковки, цифры и т.д
+
+Нода найдет пиры, потом скачает хедеры, потом начнет качать блоки, Вы можете ждать пока докачает блоки до 100% и пойти выпить пива, либо Ctr+C и продолжаем
+
+<h3>Запускаем валидатора</h3>
+
+Пишем:<br>
+
+<strong><code>near login</strong></code>
+
+Если желтым текстом будут просить Collect data, можете жать Y, Дальше у нас будет ссылка, вот типа такая:<br>
+
+![image](https://user-images.githubusercontent.com/23613367/180310884-8dfcd329-09ab-4400-a32f-bbd5de612a2b.png)
+
+Дальше нам нужно пробросить ssh тунель к серваку, я буду использовать 3й способок этого мануала https://putty.org.ru/articles/putty-ssh-tunnels.html
+тоесть поднимать тунель как прокси, и зайду через инкогнитон под проксей, именно в браузере под тунелем мы переходим по ссылке полученой в консоле.
+
 
 
 
