@@ -145,11 +145,105 @@
 
 Если желтым текстом будут просить Collect data, можете жать Y, Дальше у нас будет ссылка, вот типа такая:<br>
 
-![image](https://user-images.githubusercontent.com/23613367/180310884-8dfcd329-09ab-4400-a32f-bbd5de612a2b.png)
+![image](https://user-images.githubusercontent.com/23613367/180310884-8dfcd329-09ab-4400-a32f-bbd5de612a2b.png)<br>
+
+Сначала регистрируем себе кошелек тут:<br>
+
+<strong>https://wallet.shardnet.near.org/</strong>
 
 Дальше нам нужно пробросить ssh тунель к серваку, я буду использовать 3й способок этого мануала https://putty.org.ru/articles/putty-ssh-tunnels.html
-тоесть поднимать тунель как прокси, и зайду через инкогнитон под проксей, именно в браузере под тунелем мы переходим по ссылке полученой в консоле.
+тоесть поднимать тунель как прокси, и зайду через инкогнитон под проксей, именно в браузере под тунелем мы переходим по ссылке полученой в консоле. Вы можете искать на ютубе любой способо как пробросить тунель...
 
+После того как мы подключили ранее сделанный кошелек, нас кинет сюда:<br>
+
+![image](https://user-images.githubusercontent.com/23613367/180313257-b2be678f-4229-4f0c-8f22-4a7da9065447.png)<br>
+
+Все ок, все получилось, в консоль если не получили зеленое successfully, то вводим id(то что мы вводили когда вязали кош к ноде, что то типа yournode.shardnet.near)
+
+Теперь нам нужно чекнуть validator key file, скорее всего его не будет<br>
+<strong><code>cat ~/.near/validator_key.json</strong></code><br>
+
+Если как у меня, то едем дальше, если нет - пропускаем:<br>
+
+![image](https://user-images.githubusercontent.com/23613367/180313993-037a2b93-423e-4cca-b49a-2a4aadb11b9b.png)<br>
+
+<code><strong>near generate-key <pool_id></code></strong><br>
+ 
+вместо pool_id xx.factory.shardnet.near, например nodeemperor.factory.shardnet.near<br>
+  
+  <strong><code>cp ~/.near-credentials/shardnet/YOUR_WALLET.json ~/.near/validator_key.json</strong></code>
+  
+Теперь пишем:<br>
+  <strong><code>nano ~/.near/validator_key.json</strong></code><br>
+  account id, меняем на xx.factory.shardnet.near вместо xx имя вашего пула.<br>
+  И вместо private_key пишем secret_key. CTRL+X жмем Y и энтер
+  
+  Должно получится как_то так:<br>
+  
+  ![image](https://user-images.githubusercontent.com/23613367/180315995-558eabf2-6bdb-4e83-8bf9-4a5e01ff7740.png)<br>
+  
+  <h3>Делаем сервис</h3>
+  <strong><code>sudo nano /etc/systemd/system/neard.service</strong></code><br>
+  Вставляем:<br>
+<strong>
+<code>
+      [Unit]
+Description=NEARd Daemon Service
+
+[Service]<br>
+      
+Type=simple<br>
+      
+User=<USER-ВЕЗДЕ МЕНЯЕМ НА ВАШЕГО ЮЗЕРА,В МОЕМ СЛУЧАЕ root, если у вас тоже рут ниже в путях сотрите home(потому-что у нодранеров нет дома:)><br>
+      
+#Group=near<br>
+      
+WorkingDirectory=/home/<USER>/.near<br>
+      
+ExecStart=/home/<USER>/nearcore/target/release/neard run<br>
+      
+Restart=on-failure<br>
+      
+RestartSec=30<br>
+      
+KillSignal=SIGINT<br>
+      
+TimeoutStopSec=45<br>
+      
+KillMode=mixed<br>
+      
+<br>
+[Install]<br>
+      
+WantedBy=multi-user.target<br>
+</strong></code>
+ 
+  
+  
+<h3>Команды</h3>
+  <strong><code>sudo systemctl enable neard</strong></code> (Активация сервиса) <br>   
+  <strong><code>sudo systemctl start neard</strong></code>(Старт сервиса)<br>
+  <strong><code>sudo systemctl reload neard</strong></code>(Если что-то факапнули в файле сервиса, то исправляем и релоадим<br>
+  <strong><code>journalctl -n 100 -f -u neard</strong></code> (Логи)<br>
+  Логи в красивом принте:<br>
+  <strong><code>sudo apt install ccze </strong></code><br>
+  <strong><code>journalctl -n 100 -f -u neard | ccze -A </strong></code><br>
+  
+
+      
+
+
+  
+
+  
+  
+
+
+  
+ 
+  
+
+ 
 
 
 
